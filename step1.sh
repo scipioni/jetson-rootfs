@@ -12,7 +12,9 @@ fi
 ##########
 echo "Get environment"
 
-source ./step0_env.sh
+source .env
+
+
 
 ##########
 echo "Set script options"
@@ -38,9 +40,11 @@ echo "Debootstrap a base"
 # however, app packages will be updated later
 if [ ! -f ${ARCH}-${RELEASE}.tgz ]
 then
+    sudo rm -fR ${ROOT_DIR}
     echo "Download packages to ${ARCH}-${RELEASE}.tgz"
     debootstrap \
         --verbose \
+        --no-check-gpg \
         --make-tarball=${ARCH}-${RELEASE}.tgz \
         --arch=${ARCH} \
         ${RELEASE} \
@@ -48,19 +52,23 @@ then
         ${REPO}
 fi
 
+        #--keyring=ubuntu-archive-keyring.gpg \
         #--foreign \
 
 echo "Install packages from ${ARCH}-${RELEASE}.tgz"
 debootstrap \
     --verbose \
     --foreign \
-    --keyring=ubuntu-archive-keyring.gpg \
+    --no-check-gpg \
     --unpack-tarball=$(realpath ${ARCH}-${RELEASE}.tgz) \
     --arch=${ARCH} \
     ${RELEASE} \
     ${ROOT_DIR} \
     ${REPO}
 
+#[ -f rootfs/tmp/cuda-keyring_1.0-1_all.deb   ] ||  https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/arm64/cuda-keyring_1.0-1_all.deb
+
+sudo rsync -rv overlay/ rootfs/
 
 ##########
 
@@ -75,3 +83,12 @@ install -Dm755 $(which qemu-aarch64-static) ${ROOT_DIR}/usr/bin/qemu-aarch64-sta
 echo "Unpack ${ROOT_DIR}"
 
 chroot ${ROOT_DIR} /debootstrap/debootstrap --second-stage
+
+# sudo systemd-nspawn -bD rootfs/
+
+# jetson-gpio-common
+
+# chroot /stable-chroot /usr/bin/apt install locales
+# sed -i '/en_GB.UTF-8/s/^# //;/en_US.UTF-8/s/^# //' /stable-chroot/etc/locale.gen
+# chroot /stable-chroot /usr/sbin/locale-gen
+# echo -e 'LANG=en_GB.UTF-8\nLANGUAGE=en_GB.UTF-8' > /stable-chroot/etc/default/locale
