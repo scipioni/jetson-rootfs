@@ -77,8 +77,10 @@ tasks:
         sudo rsync -rv overlay/ $ROOTFS/
         sudo arch-chroot $ROOTFS <<EOF
         apt update
+        apt -y upgrade
         apt -y install locales
         #/usr/sbin/locale-gen
+        systemctl enable systemd-networkd.service
         EOF
 
   packages:
@@ -93,6 +95,8 @@ tasks:
           mtd-utils \
           parted \
           openssh-server \
+          vim \
+          psmisc \
           jetson-gpio-common \
           python-jetson-gpio \
           python3-jetson-gpio \
