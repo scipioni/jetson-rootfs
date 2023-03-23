@@ -1,0 +1,112 @@
+# https://taskfile.dev
+# https://www.sobyte.net/post/2022-04/taskfile/
+
+version: "3"
+
+vars:
+  GREETING: Welcome, Crew!
+
+dotenv: [".env"]
+
+tasks:
+  default:
+    cmds:
+      - go-task -l
+    silent: true
+
+  build:
+    deps: [debootstrap, base]
+    desc: "build image"
+    cmds:
+      - echo building
+
+  clean:
+    cmds:
+      - sudo rm -fR ${ROOTFS}
+
+  debootstrap:tar:
+    cmds:
+      - |
+        #mkdir -p $RUNTIME
+        #echo $TAR
+        debootstrap \
+        --verbose \
+        --no-check-gpg \
+        --make-tarball=$TAR \
+        --arch=${ARCH} \
+        ${RELEASE} \
+        ${ROOTFS} \
+        ${REPO}
+    status:
+      - test -f $TAR
+
+  debootstrap:
+    deps: [debootstrap:tar]
+    preconditions:
+      - test -f ${TAR}
+    cmds:
+      - |
+        sudo debootstrap \
+          --verbose \
+          --foreign \
+          --no-check-gpg \
+          --unpack-tarball=${TAR} \
+          --arch=${ARCH} \
+          ${RELEASE} \
+          ${ROOTFS} \
+          ${REPO}
+        sudo install -Dm755 /usr/bin/qemu-aarch64-static ${ROOTFS}/usr/bin/qemu-aarch64-static
+        sudo chroot ${ROOTFS} /debootstrap/debootstrap --second-stage
+
+    status:
+      - test -f $ROOTFS/etc/hostname
+  
+  cli:
+    cmds:
+      - |
+        sudo arch-chroot $ROOTFS
+  cli:orin:
+    cmds:
+      - |
+        sudo arch-chroot runtime/orin-os
+  base:
+    cmds:
+      - |
+        sudo rsync -rv overlay/ $ROOTFS
+        sudo arch-chroot $ROOTFS <<EOF
+        apt update
+        apt -y install locales
+        /usr/sbin/locale-gen
+        EOF
+
+  packages:
+    cmds:
+      - |
+        sudo arch-chroot $ROOTFS <<EOF
+        mkdir -p /opt/nvidia/l4t-packages/
+        touch /opt/nvidia/l4t-packages/.nv-l4t-disable-boot-fw-update-in-preinstall
+        apt -f install nvidia-l4t-core
+
+        apt-get install --no-install-recommends -y \
+          nvidia-l4t-firmware \
+          nvidia-l4t-multimedia-utils \
+          nvidia-l4t-multimedia \
+          nvidia-l4t-cuda \
+          nvidia-l4t-x11 \
+          nvidia-l4t-camera \
+          nvidia-l4t-tools \
+          nvidia-l4t-gstreamer \
+          nvidia-l4t-jetson-io \
+          nvidia-l4t-configs \
+          nvidia-l4t-3d-core \
+          nvidia-l4t-oem-config          
+        EOF
+
+  postinstall:
+    cmds:
+      - |
+        sudo arch-chroot $ROOTFS <<EOF
+        apt autoremove
+        apt autoclean
+        apt clean
+        EOF
