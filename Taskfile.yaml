@@ -72,7 +72,7 @@ tasks:
         sudo arch-chroot $ROOTFS bash --login <<EOF
           apt update
           apt -y upgrade
-          apt -y install locales
+          apt -y install locales psmisc htop
           #/usr/sbin/locale-gen
           systemctl enable systemd-networkd.service
         EOF
