@@ -15,3 +15,11 @@ build rootfs in ./runtime/rootfs
 ```
 task build
 ```
+
+
+
+## create os image
+
+```
+task optimize
+```

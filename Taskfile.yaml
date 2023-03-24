@@ -83,7 +83,7 @@ tasks:
         systemctl enable systemd-networkd.service
         EOF
 
-  packages:
+  packages:base:
     cmds:
       - |
         sudo arch-chroot $ROOTFS <<EOF
@@ -142,7 +142,23 @@ tasks:
 
         sudo du $ROOTFS -hs
 
-  postinstall:
+  packages:mev:
+    cmds:
+      - |
+        sudo arch-chroot $ROOTFS <<EOF
+          apt-get install --no-install-recommends -y \
+            cuda \
+            nvidia-cudnn8-dev \
+            libdc1394-utils libdc1394-22-dev \
+            wget \
+            git \
+            cmake \
+            python3-dev \
+            python3-numpy
+
+        EOF
+
+  optimize:
     cmds:
       - |
         sudo arch-chroot $ROOTFS <<EOF
