@@ -1,0 +1,8 @@
+# Point grey
+SUBSYSTEM=="usb", ATTR{idVendor}=="1e10", MODE:="0666", TAG+="uaccess", GROUP="plugdev"
+# Basler
+SUBSYSTEM=="usb", ATTR{idVendor}=="2676", MODE:="0666", TAG+="uaccess", TAG+="udev-acl", GROUP="plugdev"
+KERNEL=="raw1394", MODE="0664", GROUP="plugdev"
+KERNEL=="video1394*", MODE="0664", GROUP="plugdev"
+SUBSYSTEM=="firewire", GROUP="plugdev"
+SUBSYSTEM=="usb", GROUP="plugdev"

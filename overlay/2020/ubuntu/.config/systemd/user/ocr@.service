@@ -1,0 +1,16 @@
+[Unit]
+Description=ocr %I
+After=mev.service crossbar.service
+Requires=crossbar.service
+ConditionFileNotEmpty=/ubuntu/config%i.env
+
+[Service]
+Restart=always
+RestartSec=3
+EnvironmentFile=/ubuntu/config.env
+Environment="LD_LIBRARY_PATH=/ubuntu/venv/lib"
+ExecStart=/ubuntu/venv/bin/ocr_run --config=%h/ocr.conf --camera-id=%i --plate-locale=${PLATE_LOCALE}
+
+[Install]
+WantedBy=default.target
+

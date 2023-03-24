@@ -1,0 +1,7 @@
+api:
+  client_id: test
+  client_secret: zona@test@montorio
+  login: https://giano.csgalileo.org/auth/token
+  timeout: 10
+  calls:
+    base: "https://giano.csgalileo.org/saferplace/v3/base"

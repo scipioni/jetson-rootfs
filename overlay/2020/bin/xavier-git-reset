@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cd /
+
+mv .git /tmp/.git.old
+git init
+git remote add origin https://git.csgalileo.org/xavier.git
+git fetch
+git reset --mixed origin/master
+git branch --set-upstream-to=origin/master master
+
+
+git ls-tree -r master --name-only

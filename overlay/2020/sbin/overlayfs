@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# non usato,
+# sostituito da /sbin/init.overlayfs
+
+U=/tmp/upper
+W=/tmp/workdir
+
+#mkdir -p /tmp/upper/var /tmp/workdir/var
+#mount -t overlay -o lowerdir=/var,upperdir=$U/var,workdir=$U/var none /var
+
+set -x
+set +e # non uscire al primo errore
+
+overlay () {
+	D=$1
+
+	# rendiamo accessibile la cartella $D originale in /ro/$D
+	mkdir -p /ro$D
+	mount -o bind $D /ro$D
+	mount --make-private /ro$D
+
+	# creiamo un overlay su $D con le modifiche in /tmp/upper/$D
+	mkdir -p $U$D $W$D
+	mount -t overlay -o lowerdir=$D,upperdir=$U$D,workdir=$W$D none $D
+	#chown $PERM $D
+}
+
+#mount -o remount,ro /
+
+mount -t tmpfs tmpfs -o size=2000M,mode=1777 /tmp
+
+
+overlay /var
+#overlay /etc
+
+overlay /ubuntu
+chown ubuntu:ubuntu /ubuntu

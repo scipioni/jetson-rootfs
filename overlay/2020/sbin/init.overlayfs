@@ -1,0 +1,50 @@
+#!/bin/sh
+
+
+
+set -x
+set +e # non uscire al primo errore
+
+BASE=/rw
+U=$BASE/upper
+W=$BASE/workdir
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+overlay () {
+	D=$1
+
+	# rendiamo accessibile la cartella $D originale in /ro/$D
+	mkdir -p /ro$D
+	mount -o bind $D /ro$D
+	mount --make-private /ro$D
+
+	# creiamo un overlay su $D con le modifiche in /tmp/upper/$D
+	mkdir -p $U$D $W$D
+	mount -t overlay -o lowerdir=$D,upperdir=$U$D,workdir=$W$D none $D
+	#chown $PERM $D
+}
+
+dolog () {
+	mkdir /log
+	mount -t tmpfs tmpfs -o size=10M,mode=1777 /log
+	exec 3>&1 4>&2
+	trap 'exec 2>&4 1>&3' 0 1 2 3
+	exec 1>/log/overlay.log 2>&1
+}
+
+
+# dolog
+
+mkdir -p $BASE
+mount -t tmpfs tmpfs -o size=2000M,mode=1777 $BASE
+
+
+overlay /var
+mkdir -p /var/run/openntpd
+
+overlay /ubuntu
+chown ubuntu:ubuntu /ubuntu
+
+exec /lib/systemd/systemd
+

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+systemctl --user stop 'dcam*' 'brain*' 'ocr*' 'query*'
+
+rm -f /storage/*.db*
+rm -f /storage/images/*
+rm -f /storage/videos/*
+rm -f /storage/trips/*

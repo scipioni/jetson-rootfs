@@ -1,0 +1,10 @@
+api:
+  cameraCode: camera_01
+  client_id: camera_01
+  client_secret: aRNeIPZ9rDSXqCFw3Qh
+  extDeviceSign: https://fes.kiunsys.com/rest_anpr/extDeviceSign
+  recognizedPlates: https://fes.kiunsys.com/rest_anpr/recognizedPlates
+  refreshToken: https://fes.kiunsys.com/rest_anpr/refreshToken
+  refresh_token: ''
+  token: ''
+  token_date: null

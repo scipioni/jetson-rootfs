@@ -1,0 +1,105 @@
+#!/bin/sh
+
+
+[ -f /.git ] || ln -s /root/.git /.git
+[ -f /.gitgnore ] || ln -s /root/.gitignore /.gitignore
+
+find /root /etc /sbin /bin /usr /lib -user ubuntu -exec chown root:root {} \;
+chown -R ubuntu:ubuntu /ubuntu
+
+# enable systemd user space
+loginctl enable-linger ubuntu
+
+# disable xorg
+systemctl set-default multi-user
+
+apt remove -y libreoffice* docker.io thunderbird bluez* nvidia-l4t-weston whoopsie modemmanager update-notifier docker snapd chromium-browser evolution-data-server \
+   remmina evolution-data-server-common chromium-codecs-ffmpeg-extra shotwell unity oem-config ubiquity-frontend-gtk gdm3 gnome-shell ubiquity-frontend-kde gnome-control-center \
+   nautilus-share libkf5wallet-bin
+
+apt -y autoremove
+apt update
+
+apt install -y python3.8 python3.8-dev python3.8-venv cmake libdc1394-22-dev libgtk2.0-dev curl libgeos-dev \
+	snmp-mibs-downloader sqlite3
+apt install -y libffi-dev libssl-dev libxml2-dev libxslt-dev libjpeg8-dev
+apt install -y libsnappy-dev # per crossbar
+apt install -y tcl # per sqlite
+apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev # per salvare i video con opencv
+apt install -y openvpn
+apt install -y chrony python3-serial scons ncurses-dev
+apt install -y nginx
+apt install -y debfoster
+apt install -y apt-utils
+apt install -y screen
+apt install -y nfs-kernel-server autofs
+
+# rimpiazzato da chrony
+#apt install -y openntpd
+	
+rm -f /etc/nginx/sites-enabled/default
+
+# serve per scons che serve per gpsd
+update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+
+# cuda
+apt install -y cuda-compiler-10-2 cuda-tools-10-2 cuda-libraries-dev-10-2 cuda-libraries-10-2 cuda-nvml-dev-10-2 libcudnn8-dev
+apt clean
+
+# jtop
+which pip || (
+ cd /tmp
+ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+ python3 get-pip.py
+)
+which jtop || (
+ pip install jetson-stats
+)
+
+chmod -x /etc/update-motd.d/10-help-text
+chmod -x /etc/update-motd.d/90-updates-available
+chmod -x /etc/update-motd.d/91-release-upgrade
+chmod -x /etc/cron.daily/apt-compat
+
+systemctl set-default multi-user.target
+systemctl enable avahi-daemon
+systemctl disable NetworkManager
+systemctl disable wpa_supplicant
+systemctl disable systemd-timesyncd
+systemctl disable networkd-dispatcher.service
+systemctl disable systemd-resolved.service
+systemctl disable autofs
+#systemctl disable openntpd # disable ntp because is controlled by ifup scripts
+
+nvpmodel -m 3
+nvpmodel -d cool
+
+rm /etc/resolv.conf
+echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+chattr +i /etc/resolv.conf
+
+# openvpn temporary access
+if [ ! -f /etc/openvpn/auth.txt ]; then
+	cat > /etc/openvpn/auth.txt <<EOF
+tmp
+qwertyasdfgj
+EOF
+fi
+
+systemctl enable openvpn@mev.service
+
+# ubuntu user
+loginctl enable-linger ubuntu
+usermod -a -G systemd-journal ubuntu
+usermod -d /ubuntu/ ubuntu
+
+
+if [ ! -d /.git ]; then
+  git clone https://fes:zonamarocco@git.csgalileo.org/xavier.git xavier.git
+  rsync -av /xavier.git/ /
+  rm -fR /xavier.git/
+fi
+
+
+echo mev > /etc/hostname
+grep "127.0.1.1" /etc/hosts || echo "127.0.1.1 mev" >> /etc/hosts

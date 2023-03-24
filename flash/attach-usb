@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sudo virsh attach-device sdk --file usb1.xml --current
+sudo virsh attach-device sdk --file usb2.xml --current
+

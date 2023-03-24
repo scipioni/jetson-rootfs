@@ -1,0 +1,6 @@
+#!/bin/sh
+
+findmnt -t ext4
+findmnt -t overlay
+ls -al /sbin/init
+

@@ -1,0 +1,110 @@
+$schema: https://raw.githubusercontent.com/crossbario/crossbar/master/crossbar.json
+version: 2
+controller: {}
+workers:
+- type: router
+  realms:
+  - name: realm1
+    roles:
+    - name: anonymous
+      permissions:
+      - uri: ''
+        match: prefix
+        allow:
+          call: true
+          register: true
+          publish: true
+          subscribe: true
+        disclose:
+          caller: false
+          publisher: false
+        cache: true
+  transports:
+  - type: websocket
+    endpoint:
+      type: tcp
+      port: 8081
+      backlog: 1024
+    options:
+      max_message_size: 1048576
+    serializers:
+    - cbor
+    - msgpack
+    - json
+  - type: web
+    endpoint:
+      type: tcp
+      port: 8082
+      #tls:
+      #  key: server_key.pem
+      #  certificate: server_cert.pem
+    paths:
+      /:
+        type: static
+        directory: /ubuntu/runtime/www
+        options:
+          enable_directory_listing: false
+          cache_timeout: 10
+      publish:
+        type: publisher
+        realm: realm1
+        role: anonymous
+      home:
+        type: redirect
+        url: ../
+      list:
+        type: redirect
+        url: ../
+      live:
+        type: redirect
+        url: ../
+      ws:
+        type: websocket
+        serializers:
+        - cbor
+        - msgpack
+        - json
+        options:
+          allowed_origins:
+          - '*'
+          allow_null_origin: true
+          enable_webstatus: false
+#          max_frame_size: 1048576
+#          max_message_size: 1048576
+#          auto_fragment_size: 65536
+#          fail_by_drop: true
+#          open_handshake_timeout: 2500
+#          close_handshake_timeout: 1000
+#          auto_ping_interval: 10000
+#          auto_ping_timeout: 5000
+#          auto_ping_size: 4
+#          compression:
+#            deflate:
+#              request_no_context_takeover: false
+#              request_max_window_bits: 13
+#              no_context_takeover: false
+#              max_window_bits: 13
+#              memory_level: 5
+      info:
+        type: nodeinfo
+  # accesso dati ai frontend
+#  - type: websocket
+#    debug: false
+#    endpoint:
+#      type: tcp
+#      port: 8091
+#    auth:
+#      anonymous:
+#        type: static
+#        role: anonymous
+#    options:
+#      enable_webstatus: false
+#      max_frame_size: 0
+#      auto_fragment_size: 0
+#      fail_by_drop: true
+#      open_handshake_timeout: 2500
+#      close_handshake_timeout: 1000
+#      auto_ping_interval: 50000
+#      auto_ping_timeout: 25000
+#      auto_ping_size: 4
+#

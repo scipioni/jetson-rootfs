@@ -1,0 +1,14 @@
+[Unit]
+Description=routerconnector service
+After=crossbar.service
+Requires=crossbar.service
+
+[Service]
+Restart=always
+RestartSec=3
+Environment="LD_LIBRARY_PATH=/ubuntu/venv/lib"
+ExecStart=/ubuntu/venv/bin/routerconnector_run -c %h/routerconnector.conf
+
+[Install]
+WantedBy=default.target
+

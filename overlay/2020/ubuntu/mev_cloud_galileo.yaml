@@ -1,0 +1,12 @@
+api:
+  #cameraCode: galileoTest
+  #client_id: 5djZFhyPNlcR8SgL
+  enable: 0
+  client_secret: aRNeIPZ9rDSXqCFw3Qh
+  extDeviceSign: https://mev.csgalileo.org/api/extDeviceSign
+  recognizedPlates: https://mev.csgalileo.org/api/recognizedPlates
+  timeout: 30
+  refreshToken: https://mev.csgalileo.org/api/refreshToken
+  refresh_token: ''
+  token: ''
+  token_date: null

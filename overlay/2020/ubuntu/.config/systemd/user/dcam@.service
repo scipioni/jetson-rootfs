@@ -1,0 +1,16 @@
+[Unit]
+Description=dcam %I
+ConditionFileNotEmpty=/ubuntu/config%i.env
+After=ocr@%i.service
+
+[Service]
+ExecStartPre=/usr/bin/test -f /tmp/gps-fix
+ExecStartPre=/bin/sleep 10
+Restart=always
+RestartSec=3
+EnvironmentFile=/ubuntu/config%i.env
+ExecStart=/ubuntu/venv/bin/dcam_run --config %h/dcam.conf --camera-serial=${SERIAL%i} --camera-id=%i --camera-flip-y=${FLIP%i}
+
+[Install]
+WantedBy=default.target
+

@@ -1,0 +1,5 @@
+#allow-hotplug wlan0
+#iface wlp2s0 inet dhcp
+#  wpa-ssid mev0
+#  wpa-psk mev0mev0
+#  post-up iwconfig wlan0 power off txpower 16

@@ -1,0 +1,24 @@
+[user]
+    name = Stefano Scipioni
+    email = scipio.it@gmail.com
+[core]
+	autocrlf = input
+    #safecrlf = true
+    editor = vim
+[http]
+    sslverify = false
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    type = cat-file -t
+    dump = cat-file -p
+[push]
+    default = simple
+[color]
+	ui = auto
+[merge "ours"]
+	driver = true
+

@@ -1,0 +1,15 @@
+[Unit]
+Description=mev service
+After=crossbar.service
+Requires=crossbar.service
+
+[Service]
+Restart=always
+RestartSec=3
+Environment="LD_LIBRARY_PATH=/ubuntu/venv/lib"
+Environment="PYTHONPATH=/usr/local/lib/python3/dist-packages"
+ExecStart=/ubuntu/venv/bin/query_run --config %h/query.conf
+
+[Install]
+WantedBy=default.target
+

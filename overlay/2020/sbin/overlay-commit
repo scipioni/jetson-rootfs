@@ -1,0 +1,41 @@
+#!/bin/sh
+
+DRYRUN=$1
+
+commit () {
+    D=$1
+    LOWER=/ro/$D
+    UPPER=/rw/upper/$D
+
+	[ "$DRYRUN" = "-n" ] || mount -o remount,rw $LOWER
+    
+    rsync -av $DRYRUN \
+        --exclude .cache \
+        --exclude tmp \
+        --exclude log \
+        $UPPER $LOWER
+
+    cd $UPPER
+    find . -type f -perm 0000 > /tmp/.deleted
+    
+	if [ -s /tmp/.deleted ]; then
+		echo "WARNING: to be deleteted"
+		cat /tmp/.deleted
+
+		if [ ! "$DRYRUN" = "-n" ]; then
+			cd $LOWER
+			rm -f $(cat /tmp/.deleted)
+			cd $UPPER
+			rm -f $(cat /tmp/.deleted)
+		fi
+	fi
+
+}
+
+
+
+#commit /etc/
+commit /var/
+commit /ubuntu/
+
+

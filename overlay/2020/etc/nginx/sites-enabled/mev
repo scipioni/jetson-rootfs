@@ -1,0 +1,89 @@
+server {
+  listen 80 default_server;
+  server_name _;
+  server_tokens off;
+  proxy_buffering off;
+
+  # create this folder empty
+  location /.well-known/acme-challenge {
+ 	     root /var/www;
+      allow all;
+  }
+
+  #  location / {
+  #      return 302 https://$host$request_uri;
+  #  }
+  # application angular
+  location / {
+    root /ubuntu/runtime/www/;
+    try_files $uri$args $uri$args/ /index.html;
+    allow all;
+    access_log off;
+  }
+  location /ws {
+    #rewrite ^/ws/([A-Za-z0-9]+) /ws break;
+    access_log off;
+    proxy_pass http://127.0.0.1:8082;
+    proxy_http_version 1.1;
+    proxy_connect_timeout 5s; # default 60s
+    proxy_request_buffering off;
+#    proxy_pass_request_headers on;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Upgrade $http_upgrade;
+    #proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Connection "upgrade";
+#    #allow all;
+  }
+
+}
+
+server {
+  listen 443 default_server;
+  server_name _;
+  server_tokens off;
+  ssl on;
+  ssl_certificate /ubuntu/crossbar/server_cert.pem;
+  ssl_certificate_key /ubuntu/crossbar/server_key.pem;
+  proxy_buffering off;
+
+
+  # application angular
+  location / {
+    root /ubuntu/runtime/www/;
+    try_files $uri$args $uri$args/ /index.html;
+    allow all;
+    access_log off;
+  }
+
+
+#  location ~* ^/xxx/ {
+#       rewrite ^/xxx/(.*) /$1 break;
+#    proxy_pass http://10.44.100.12:8080;
+#    #resolver 127.0.0.1;
+#    #proxy_http_version 1.1;
+#    proxy_set_header Host $host;
+#    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#    #proxy_set_header Upgrade $http_upgrade;
+#    #proxy_set_header Connection $connection_upgrade;
+#    allow all;
+#  }
+#
+  location /ws {
+    #rewrite ^/ws/([A-Za-z0-9]+) /ws break;
+    access_log off;
+    proxy_pass http://127.0.0.1:8082;
+    proxy_http_version 1.1;
+    proxy_connect_timeout 5s; # default 60s
+    proxy_request_buffering off;
+#    proxy_pass_request_headers on;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Upgrade $http_upgrade;
+    #proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Connection "upgrade";
+#    #allow all;
+  }
+
+}
+	

@@ -1,0 +1,12 @@
+[Unit]
+Description=crossbar
+
+[Service]
+Restart=always
+RestartSec=3
+#ExecStart=/usr/bin/authbind --deep  /ubuntu/venv/bin/crossbar start --cbdir %h/crossbar
+ExecStart=/ubuntu/venv/bin/crossbar start --cbdir %h/crossbar
+
+[Install]
+WantedBy=default.target
+

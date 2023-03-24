@@ -1,0 +1,5 @@
+#!/bin/sh
+
+( sleep 15 && echo 128 > /sys/devices/pwm-fan/target_pwm ) &
+#ip link show wlan0 && ( iwconfig wlan0 power off ; iwconfig wlan0 txpower 16)
+exit 0

@@ -1,0 +1,10 @@
+api:
+  #cameraCode: galileoTest
+  #client_id: 5djZFhyPNlcR8SgL
+  client_secret: aRNeIPZ9rDSXqCFw3Qh
+  extDeviceSign: http://localhost:8001/extDeviceSign
+  recognizedPlates: http://localhost:8001/recognizedPlates
+  refreshToken: http://localhost:8001/refreshToken
+  refresh_token: ''
+  token: ''
+  token_date: null

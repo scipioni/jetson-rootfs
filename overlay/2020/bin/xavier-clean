@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd /storage
+
+mkdir -p old
+mv plates.db old/$(date +"%s").db
+
+# cancelliamo i files più vecchi di 3 giorni
+find /storage/old /storage/trips /storage/images -type f -mtime +3 | xargs rm -f

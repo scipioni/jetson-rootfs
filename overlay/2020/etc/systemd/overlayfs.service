@@ -1,0 +1,21 @@
+[Unit]
+Description=overlayfs service (non usato, sostituito da /sbin/init.overlayfs)
+
+#DefaultDependencies=no
+#Conflicts=shutdown.target
+#After=systemd-remount-fs.service
+#Before=local-fs-pre.target local-fs.target shutdown.target
+#Wants=local-fs-pre.target
+#ConditionPathExists=/dev/nvme0n1p1
+#ConditionVirtualization=!container
+
+
+Before=local-fs-pre.target haveged.service anacron.service
+WantedBy=local-fs-pre.target haveged.service anacron.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/overlayfs
+
+[Install]
+WantedBy=local-fs-pre.target

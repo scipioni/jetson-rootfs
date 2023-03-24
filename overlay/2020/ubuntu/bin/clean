@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -x
+
+S=/storage
+FLAG=/storage/.last
+
+sudo systemctl restart nginx
+
+[ -f $FLAG ] || touch $FLAG
+
+# controlliamo l'integrità del db ed eventualmente lo eliminiamo
+echo 'pragma integrity_check;' | sqlite3 /storage/plates.db || rm -f $S/*.db*
+echo 'pragma integrity_check;' | sqlite3 /storage/gps.db || rm -f $S/*.db*
+
+
+find $S -name .last -type f -ctime +2 -exec rm -f $S/*.db* \;
+
+# eliminiano le immagini
+find $S -type f -ctime +2 -exec rm {} \;
+
+
+exit 0
+

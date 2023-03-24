@@ -1,0 +1,7 @@
+#!/bin/sh
+
+
+set +e
+mount -o remount,rw /
+sed -i -e "s/ro,defaults/rw,defaults/" /etc/fstab
+ln -sf /lib/systemd/systemd /sbin/init && reboot

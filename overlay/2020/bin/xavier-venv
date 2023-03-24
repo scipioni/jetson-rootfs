@@ -1,0 +1,36 @@
+#!/bin/bash
+
+cd $HOME
+[ -d venv  ] || (
+ mv .pip .pip.disabled
+ python3.8 -mvenv venv
+ source venv/bin/activate
+ cd /tmp
+ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+ python get-pip.py
+ mv .pip.disabled .pip
+)
+
+cd $HOME
+source venv/bin/activate
+pip install -U cython
+pip install -U crossbar
+pip install -U numpy
+pip install -U dnnutils
+pip install -U mev_g
+
+upgrade all
+
+pip show pypylon || (
+ wget https://github.com/basler/pypylon/releases/download/1.6.0/pypylon-1.6.0-cp38-cp38-linux_aarch64.whl -O /tmp/pypylon-1.6.0-py3-none-any.whl
+ pip install /tmp/pypylon-1.6.0-py3-none-any.whl
+)
+
+
+xavier-opencv4-build.sh
+xavier-gpsd-build.sh
+xavier-sqlite-build.sh
+
+
+
+

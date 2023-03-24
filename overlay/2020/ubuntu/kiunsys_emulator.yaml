@@ -1,0 +1,10 @@
+api:
+  cameraCode: galileoTest
+  client_id: 5djZFhyPNlcR8SgL
+  client_secret: aRNeIPZ9rDSXqCFw3Qh
+  extDeviceSign: https://mev.giano.io/emulator/extDeviceSign
+  recognizedPlates: https://mev.giano.io/emulator/recognizedPlates
+  refreshToken: https://mev.giano.io/emulator/refreshToken
+  refresh_token: ''
+  token: ''
+  token_date: null
