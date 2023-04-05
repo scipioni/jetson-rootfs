@@ -9,10 +9,14 @@ tasks:
     silent: true
 
   build:
-    deps: [debootstrap, base]
+    #deps: [debootstrap, base]
     desc: "build image"
     cmds:
-      - echo building
+      - task: debootstrap:tar
+      - task: debootstrap
+      - task: base
+      - task: packages:base
+      - task: packages:docker
 
   clean:
     cmds:
@@ -35,7 +39,6 @@ tasks:
       - test -f $TAR
 
   debootstrap:
-    deps: [debootstrap:tar]
     preconditions:
       - test -f ${TAR}
     cmds:
@@ -51,7 +54,6 @@ tasks:
           ${REPO}
         sudo install -Dm755 /usr/bin/qemu-aarch64-static ${ROOTFS}/usr/bin/qemu-aarch64-static
         sudo chroot ${ROOTFS} /debootstrap/debootstrap --second-stage
-
     status:
       - test -f $ROOTFS/etc/hostname
 
@@ -72,7 +74,7 @@ tasks:
         sudo arch-chroot $ROOTFS bash --login <<EOF
           apt update
           apt -y upgrade
-          apt -y install locales psmisc htop
+          apt -y install locales psmisc htop usbutils wget curl vim jq
           #/usr/sbin/locale-gen
           systemctl enable systemd-networkd.service
         EOF
@@ -87,14 +89,9 @@ tasks:
 
           apt-get install --no-install-recommends -y \
             git \
-            wget \
-            curl \
-            usbutils \
             mtd-utils \
             parted \
             openssh-server \
-            vim \
-            psmisc \
             jetson-gpio-common \
             python-jetson-gpio \
             python3-jetson-gpio \
@@ -155,7 +152,8 @@ tasks:
           apt-get update
           apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
           apt-get install -y nvidia-container
-          usermod -aG docker ubuntu
+          # TODO usermod -aG docker ubuntu
+          #cat /etc/docker/daemon.json | jq '. += { "insecure-registries":["http://docker.csgalileo.org:5000"] }' | tee /etc/docker/daemon.json
         EOF
 
   opencv:
@@ -190,7 +188,6 @@ tasks:
           /scripts/jetson-opencv4-build.sh
         EOF
 
-
   optimize:
     cmds:
       - |
@@ -207,7 +204,6 @@ tasks:
       - |
         cd $RUNTIME
         sudo tar --exclude rootfs/usr/local/src/opencv -c rootfs | nc 192.168.122.18 1234
-
 
   flash:
     deps: [usb, os:flash]
