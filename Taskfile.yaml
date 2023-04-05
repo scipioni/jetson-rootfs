@@ -74,7 +74,7 @@ tasks:
         sudo arch-chroot $ROOTFS bash --login <<EOF
           apt update
           apt -y upgrade
-          apt -y install locales psmisc htop usbutils wget curl vim jq
+          apt -y install locales psmisc htop usbutils wget curl vim jq gdisk
           #/usr/sbin/locale-gen
           systemctl enable systemd-networkd.service
         EOF
@@ -153,7 +153,7 @@ tasks:
           apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
           apt-get install -y nvidia-container
           # TODO usermod -aG docker ubuntu
-          #cat /etc/docker/daemon.json | jq '. += { "insecure-registries":["http://docker.csgalileo.org:5000"] }' | tee /etc/docker/daemon.json
+          cat /etc/docker/daemon.json | jq '. += { "insecure-registries":["http://docker.csgalileo.org:5000"] }' | tee /etc/docker/daemon.json
         EOF
 
   opencv:
