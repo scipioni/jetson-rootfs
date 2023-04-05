@@ -1,0 +1,46 @@
+version: "3"
+name: "mev"
+services:
+  grabber0:
+    image: ${REGISTRY}/yololab/dnnutils:${OPENCV_VERSION}
+    command: "dcam_run ${GRABBER_OPTS} ${GRABBER_DEBUG} --camera-id 0 --config /dcam.conf"
+    privileged: true
+    volumes:
+      - /dev/shm:/dev/shm
+      - /dev/bus/usb:/dev/bus/usb
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./dcam.conf:/dcam.conf
+    environment:
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+
+  ocr0:
+    image: mev/ocr
+    command: "ocr_run --camera-id 0 --disable-watchdog ${OCR_OPTS} $WS $PLATE $OCR"
+    restart: unless-stopped
+    #depends_on:
+    #  - crossbar
+    #  - grabber0
+    build:
+      context: ./mev-ocr
+      args:
+        - ENV=${ENV}
+    volumes:
+      - /dev/shm:/dev/shm
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./mev-ocr/ocr.conf:/app/ocr.conf
+    environment:
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+    devices:
+      - "/dev/nvidia0:/dev/nvidia0"
+      - "/dev/nvidia-uvm:/dev/nvidia-uvm"
+      - "/dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools"
+      - "/dev/nvidiactl:/dev/nvidiactl"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
+
+
