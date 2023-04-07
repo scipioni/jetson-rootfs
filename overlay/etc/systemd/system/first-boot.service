@@ -1,0 +1,16 @@
+[Unit]
+Description=run first-boot script
+Before=basic.target
+After=local-fs.target sysinit.target
+DefaultDependencies=no
+ConditionPathExists=!/scripts/first-boot.done
+
+
+[Service]
+Type=oneshot
+ExecStart=/scripts/first-boot.sh
+ExecStartPost=/usr/bin/touch /scripts/first-boot.done
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

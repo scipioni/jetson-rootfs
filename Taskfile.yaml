@@ -74,9 +74,10 @@ tasks:
         sudo arch-chroot $ROOTFS bash --login <<EOF
           apt update
           apt -y upgrade
-          apt -y install locales psmisc htop usbutils wget curl vim jq gdisk
+          apt -y install locales psmisc htop usbutils wget curl vim jq gdisk i2c-tools
           #/usr/sbin/locale-gen
           systemctl enable systemd-networkd.service
+          systemctl enable first-boot.service
         EOF
 
   packages:base:
